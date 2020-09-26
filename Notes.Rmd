@@ -1,0 +1,170 @@
+---
+title: "Notes on Online Laboratory Data Plotter 1.2.1 - beta version"
+output:
+  html_document:
+    toc: TRUE
+    depth: 3
+    number_sections: TRUE
+    theme: NULL
+    highlight: NULL
+bibliography: bibliography.bibtex
+---
+
+# Instructions
+
+Two panels are available, one for plotting scatter graphs and other for plotting histograms, which work independently.
+
+## Features common to both panels
+
+### Input methods
+
+There are two input methods:  
+
+1. Typing the data manually and using tab or return keys to jump to the next cell. Excel-like selection of cells are also available. Adding or removing lines as well as certain formatting features are available by right-clicking.  
+
+2. Copying and pasting from Excel-like softwares.
+
+### Exporting data
+
+Data can be exported by clicking on the download button bellow input tables and bellow the results table on the histogram panel. Data is exported to a csv (comma separated values) file with headers and can be imported by most of data treatment softwares (Origin, Excel, etc).
+
+### Settings common to both panels
+
+**Axes titles: x title, y title**: Titles for *y* and *x* axes can be typed using plotmath syntax (<https://stat.ethz.ch/R-manual/R-devel/library/grDevices/html/plotmath.html>). Character expressions should be quoted and symbols unquoted. The `*` is used to concatenate pieces of strings. Examples:  
+ <br>
+ 
+**Table 1.** Examples of typing using plotmath syntax.
+
+text typed | text displayed
+---------------------- | --------------------------
+"angular velocity, "\*dot(theta)\*" (rad/s)" | angular velocity, $\dot\theta$ (rad/s)
+x[1]^2 or x[1]**2 | $x_1^2$
+Delta*y | $\Delta y$ 
+
+<br>
+**Axes scale: min x, max x, min y, max y**: Minimum and maximum values for the axes scales can be set manually. If the fields are left blank, the graph is automatically rescaled.
+<br>
+**Decimal places** show the number of decimal places (1-5) in numbers entered on the table.
+
+
+## Scatter panel
+
+### Input table and plot creation
+
+The columns of the input table are:
+
+ |  
+--------------------- | ---------------------------
+X: | values for the variable in the x-axis
+DX: | uncertainties of the values for the variable in the x-axis
+Y: | values for the variable in the y-axis
+DY: | uncertainties of the values for the variable in the y-axis
+
+The scatter graph is created as the user types the data. Uncertainty bars are added as the user types the uncertainty values.
+
+A Log-Log chart, using the same data, is created by checking the **show log-log** box.A straight fitted line can be drawn on the Log-Log chart by checking the **show fitted straight line** box.
+
+### Linear regression
+
+The linear model is:
+
+$$
+\begin{equation}
+y = a x + b
+\tag{1}
+\end{equation}
+$$
+To carry out a linear regression with the inputted data, check the **linear regression** box on the **Graph settings** panel. Linear and angular coefficients, with the uncertainties, will be displayed bellow the checkbox and the regression line will be plotted in red. If uncertaints $\sigma_x$ (column DX) and $\sigma_y$ (column DY) are given, the Deming regression [@Deming1964], which is a special case of the Total Least Squares calculation [@vanHuffel1991], is performed with the `deming()` function of the *deming* package [@Deming]. If only $\sigma_y$ is given, the Weighted Least Squares (WTS) calculation is carried out using the formulas given by @Bevington. In case, no uncertainties or only $\sigma_x$ is given, the Simple Least Squares calculation is performed using the `lm()` function of the *stat* package [@R]. The linear model coefficients will be given with a subindex identifying the type of calculation:  
+<br>
+ 
+1. Deming Regression  
+2. Weighted Least Squares  
+3. Simple Least Squares  
+
+<br>
+
+
+The WTS holds for the case in which only $\sigma_y$ is given. However, it is possible to take the uncertainty $\sigma_x$ into account. In case only $\sigma_x$ is given, one may invert the linear model in such a way that $\sigma_x$ becomes $\sigma_y$. If, for any reason, the model cannot be inverted, exchange variables X and Y, carry out WTS and apply the due transformations to get the correct information:
+
+<br>
+
+**Table 2.** Conversion of model coefficients for regression with inverted model
+
+WTS coefficients for the inverted model  | transformation to original model coefficients
+---------------------- | --------------------------
+$a$ | $\frac{1}{a}$
+$\Delta a$ | $\frac{\Delta a}{a^2}$
+$b$ | $- \frac{b}{a}$
+$\Delta b$ | $\frac{b}{a} \sqrt{\left( \frac{\Delta a}{a} \right)^2 + \left( \frac{\Delta b}{b} \right)^2}$
+
+<br>
+
+@Bevington suggest an approximation to consider the uncertainty in the x variable. It consists in estimating the indirect contribution of $\sigma_x$ to $\sigma_y$ through the differential:  
+$$
+\begin{equation}
+\sigma_{yI} = \sigma_x \frac{dy}{dx} 
+\tag{2}
+\end{equation}
+$$
+Then, combining it with the direct contribution for the y uncertainty, $\sigma_{yD}$:
+
+$$
+\begin{equation}
+\sigma_y^2 = \sigma_{yI}^2 + \sigma_{yD}^2
+\tag{3}
+\end{equation}
+$$
+To calculate the derivative, a first approximation of the model parameters must be known. One could run a simple linear regression, obtain the model parameters and then, after calculating the values of $\sigma_y$ with Eq. 3, run WTS.  
+
+**CAUTION**: For type 1 calculation, X, DX, Y and DY must have the same length. For  type 2 calculation, X, Y and DY must have the same length and DX must be empty. For type 3 calculation, DX and DY must be empty.
+
+## Histogram panel
+
+### Input table and plot creation
+
+There are 30 named columns (col1 ... col30). Each column will be used to build one histogram. On the **Histogram settings** box choose the number of columns to be considered for calculation and then choose the histogram to be shown. The histogram will be created as data are inputted. Mean and standard deviation for each selected column appear on the table above the histogram. The mean values are calculated with the `mean()` function of the *base* package [@R]. The standard deviation is calculated with the `sd()` function of the *stats* package [@R].
+
+**Bin size** and **Bin boundary** are set manually. After scrutiny of the data to identify the lowest and highest values, a first guess for bin size is obtained applying the formula:
+
+$$
+\begin{equation}
+\text{bin size}=\frac{\text{(highest value)} - \text{(lowest value)} }{\sqrt{\text{number of data values}}}
+\tag{4}
+\end{equation}
+$$
+**Bin boundary** may be initially set as the lowest data value. Note tha the values will be grouped in intervals closed on the left border.
+
+To superimpose the normal (Gaussian) curve on the histogram, check the **show normal curve** box. The curve will appear in red.
+
+**Important:** only data in selected columns will be exported using the download button.
+
+
+## Known issues
+
+1. The input tables do accept scientific notation as an input method, but do not display values in scientic notation. Users should be careful about the choice of scale.
+
+2. It is still not possible to upload data as a method of input.
+
+3. Typing too fast may cause application to go into a loop. A workaround is to switch tabs for a while.
+
+4. Pasting datasets with more lines than the input table will cause the application to crash. Before pasting data be sure that the number of lines on the input table (default is 200) is equal or greater to the number of lines in the dataset. More lines can be created by right-clicking.
+
+# Details
+
+Online Laboratory Data Plotter is a R Shiny [@Shiny] application for plotting simple scatter graphs and histograms. The following packages, besides R base [@R], were used to build the application:  
+<br>
+shiny - @Shiny  
+rhandsontable - @Rhandsontable  
+stats - @R  
+scales - @Scales  
+deming - @Deming  
+<br>
+**Version date: August 22th, 2019**  
+**Authors: Sandro Guedes de Oliveira and Arnaldo Luis Lixandrão Filho**  
+*Department of Cosmic Rays and Chronology - Physics Institute \"Gleb Wataghin\" - University of Campinas*
+
+# References
+
+---
+references:
+---
