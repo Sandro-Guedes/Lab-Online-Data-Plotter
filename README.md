@@ -3,7 +3,7 @@ Simple software to plot lab data
 
 ## Overview
 
-The Laboratory Online Data Plotter is a simple R `Shiny` application to plot data obtained in experiments at introductory physics labs. It has been developed at the "Gleb Wataghin" Physics Institute of the University of Campinas (Campinas, Brazil). Scatter plots, log-log plots, histograms can be plotted. For the scatter plots, the Least Squares Fitting is available for uncertainties in *x*, *y*, both, or none. For the histograms, it calculates mean and standard deviation and shows the normal curves. Detailed instructions can be found in *Notes.html*.
+The Laboratory Online Data Plotter is a simple R `Shiny` application to plot data obtained in experiments at introductory physics labs. It has been developed at the "Gleb Wataghin" Physics Institute of the University of Campinas (Campinas, Brazil). Scatter plots, log-log plots, histograms can be plotted. For the scatter plots, the Least Squares Fitting is available for uncertainties in *x*, *y*, both, or none. For the histograms, it calculates mean and standard deviation and shows the normal curve. Detailed instructions can be found in *Notes.html*.
 
 ## Launching instructions
 
