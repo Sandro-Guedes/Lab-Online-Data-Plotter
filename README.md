@@ -8,13 +8,16 @@ The Laboratory Online Data Plotter is a simple shiny application to plot data ob
 ## Lauching instructions
 
 Laboratory Online Data Plotter runs on browser tab. It can be lauched from an R editor, like RGui or RStudio. Using RGui:
-1. Create a folder named "Plotter" and include the files "ui.R", "server.R", and "Notes.html".
+1. Create a folder named "Plotter" and include the files *ui.R*, *server.R*, and *Notes.html*.
 2. Create a folder named "Data" in folder "Plotter".
 3. In RGui, change directory to "Plotter"
-4. Interpret "ui.R" and "server.R":
->source("ui.R")
+4. Interpret *ui.R* and *server.R*:
 
->source("server.R")
+```ruby
+source("ui.R")
+source("server.R")
+```
+
 5. To lauch the application:
 >runApp()
 6. A browser tab will be openned and you can work!
