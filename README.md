@@ -12,7 +12,7 @@ Laboratory Online Data Plotter runs on browser tab. It can be lauched from an R 
 2. Create a folder named "Data" in folder "Plotter".
 3. In RGui, change directory to "Plotter"
 4. Interpret "ui.R" and "server.R":
-> 'source("ui.R")'
+'source("ui.R")'
 
 > 'source("server.R")'
 5. To lauch the application:
